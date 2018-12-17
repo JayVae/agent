@@ -21,7 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
  *****************************************************************/
 
-package bookTrading;
+package bookTrading0;
 
 import jade.core.Agent;
 import jade.core.behaviours.*;
@@ -105,6 +105,7 @@ public class BookSellerAgent extends Agent {
 	   with a PROPOSE message specifying the price. Otherwise a REFUSE message is
 	   sent back.
 	 */
+	//即书中的CallForOfferServer,用于卖方Agent处理来自卖方Agent的请求
 	private class OfferRequestsServer extends CyclicBehaviour {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
@@ -141,6 +142,7 @@ public class BookSellerAgent extends Agent {
 	   and replies with an INFORM message to notify the buyer that the
 	   purchase has been sucesfully completed.
 	 */
+	//即书中的PurchaseOrderServer
 	private class PurchaseOrdersServer extends CyclicBehaviour {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);

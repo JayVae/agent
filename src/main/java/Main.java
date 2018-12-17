@@ -39,7 +39,7 @@ public class Main {
         try {
             rma = mc.createNewAgent("rma", "hello.HelloWorldAgent", null);
             rma.start();
-            AgentController buyer = mc.createNewAgent("buyer", "bookTrading.BookBuyerAgent", null);
+            AgentController buyer = mc.createNewAgent("buyer", "bookTrading0.BookBuyerAgent", null);
             buyer.start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
@@ -63,6 +63,13 @@ public class Main {
         p.setParameter(Profile.MAIN_HOST, host);
         p.setParameter(Profile.MAIN_PORT, port);
         ContainerController cc = rt.createAgentContainer(p);
+
+        Profile p2 =  new ProfileImpl();
+        p.setParameter(Profile.MAIN_HOST, host);
+        p.setParameter(Profile.MAIN_PORT, port);
+        p.setParameter(Profile.AGENTS,host);
+
+
         if (cc != null) {
             try {
                 System.out.println("再启动一次");

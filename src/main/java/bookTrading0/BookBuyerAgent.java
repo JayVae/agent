@@ -21,23 +21,28 @@ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
  *****************************************************************/
 
-package bookTrading;
+package bookTrading0;
 
-import jade.core.Agent;
 import jade.core.AID;
-import jade.core.behaviours.*;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
+import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 public class BookBuyerAgent extends Agent {
 	// The title of the book to buy
 	private String targetBookTitle;
 	// The list of known seller agents
 	private AID[] sellerAgents;
+
+	public BookBuyerAgent(String targetBookTitle) {
+		this.targetBookTitle = targetBookTitle;
+	}
 
 	// Put agent initializations here
 	protected void setup() {
@@ -51,37 +56,42 @@ public class BookBuyerAgent extends Agent {
 			System.out.println("Target book is "+targetBookTitle);
 
 			// Add a TickerBehaviour that schedules a request to seller agents every minute
-			addBehaviour(new TickerBehaviour(this, 60000) {
-				protected void onTick() {
-					System.out.println("Trying to buy "+targetBookTitle);
-					// Update the list of seller agents
-					DFAgentDescription template = new DFAgentDescription();
-					ServiceDescription sd = new ServiceDescription();
-					sd.setType("book-selling");
-					template.addServices(sd);
-					try {
-						DFAgentDescription[] result = DFService.search(myAgent, template); 
-						System.out.println("Found the following seller agents:");
-						sellerAgents = new AID[result.length];
-						for (int i = 0; i < result.length; ++i) {
-							sellerAgents[i] = result[i].getName();
-							System.out.println(sellerAgents[i].getName());
-						}
-					}
-					catch (FIPAException fe) {
-						fe.printStackTrace();
-					}
-
-					// Perform the request
-					myAgent.addBehaviour(new RequestPerformer());
-				}
-			} );
+			//也就是PurchaseManager行为，但是并未实现在截止日期结束前进行线性调节的功能。
+			purchase();
 		}
 		else {
 			// Make the agent terminate
 			System.out.println("No target book title specified");
 			doDelete();
 		}
+	}
+
+	public void purchase() {
+		addBehaviour(new TickerBehaviour(this, 60000) {
+            protected void onTick() {
+                System.out.println("Trying to buy "+targetBookTitle);
+                // Update the list of seller agents
+                DFAgentDescription template = new DFAgentDescription();
+                ServiceDescription sd = new ServiceDescription();
+                sd.setType("book-selling");
+                template.addServices(sd);
+                try {
+                    DFAgentDescription[] result = DFService.search(myAgent, template);
+                    System.out.println("Found the following seller agents:");
+                    sellerAgents = new AID[result.length];
+                    for (int i = 0; i < result.length; ++i) {
+                        sellerAgents[i] = result[i].getName();
+                        System.out.println(sellerAgents[i].getName());
+                    }
+                }
+                catch (FIPAException fe) {
+                    fe.printStackTrace();
+                }
+
+                // Perform the request
+                myAgent.addBehaviour(new RequestPerformer());
+            }
+        } );
 	}
 
 	// Put agent clean-up operations here
@@ -95,6 +105,7 @@ public class BookBuyerAgent extends Agent {
 	   This is the behaviour used by Book-buyer agents to request seller 
 	   agents the target book.
 	 */
+	//即书中的BookNegotiator,用于卖方Agent和卖方agent进行谈判
 	private class RequestPerformer extends Behaviour {
 		private AID bestSeller; // The agent who provides the best offer 
 		private int bestPrice;  // The best offered price
@@ -106,6 +117,7 @@ public class BookBuyerAgent extends Agent {
 			switch (step) {
 			case 0:
 				// Send the cfp to all sellers
+				//向所有卖方agent发送cfp
 				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 				for (int i = 0; i < sellerAgents.length; ++i) {
 					cfp.addReceiver(sellerAgents[i]);
@@ -121,6 +133,7 @@ public class BookBuyerAgent extends Agent {
 				break;
 			case 1:
 				// Receive all proposals/refusals from seller agents
+				//接收所有来自卖方agent的建议或拒绝
 				ACLMessage reply = myAgent.receive(mt);
 				if (reply != null) {
 					// Reply received
@@ -145,6 +158,7 @@ public class BookBuyerAgent extends Agent {
 				break;
 			case 2:
 				// Send the purchase order to the seller that provided the best offer
+//				向提供最优价格的卖方agent发送购买订单
 				ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 				order.addReceiver(bestSeller);
 				order.setContent(targetBookTitle);
@@ -158,6 +172,7 @@ public class BookBuyerAgent extends Agent {
 				break;
 			case 3:      
 				// Receive the purchase order reply
+//				收到购买订单回复
 				reply = myAgent.receive(mt);
 				if (reply != null) {
 					// Purchase order reply received

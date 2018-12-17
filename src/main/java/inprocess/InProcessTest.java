@@ -166,8 +166,8 @@ public class InProcessTest {
             ProfileImpl pContainer = new ProfileImpl(null, 8888, null);
             System.out.println("Launching the agent container ..." + pContainer);
             AgentContainer cont = rt.createAgentContainer(pContainer);
-            AgentController adk = cont.createNewAgent("adk", "jade.tools.rma.rma", new Object[0]);
-            adk.start();
+            AgentController seller = cont.createNewAgent("seller", "bookTrading0.BookSellerAgent", new Object[0]);
+            seller.start();
             System.out.println("Launching the agent container after ..." + pContainer);
 
             System.out.println("Launching the rma agent on the main container ...");
