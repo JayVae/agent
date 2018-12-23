@@ -107,7 +107,7 @@ public class BookSellerAgent extends Agent {
      * This method is called by the GUI when the user inserts a new
      * book for sale
      * @param title The title of the book for sale
-     * @param initialPrice The initial price
+     * @param initPrice The initial price
      * @param minPrice The minimum price
      * @param deadline The deadline by which to sell the book
      **/
