@@ -7,4 +7,5 @@ package Param;
  */
 public class SellerBidParam {
 
+
 }

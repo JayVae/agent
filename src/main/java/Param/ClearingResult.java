@@ -1,5 +1,7 @@
 package Param;
 
+import lombok.Data;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  * @Date: Created in 19:47 2018/12/26
  * @Modified By:
  */
+@Data
 public class ClearingResult {
 
     private double clearPrice;

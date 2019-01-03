@@ -1,10 +1,13 @@
 package entity;
 
+import lombok.Data;
+
 /**
  * @Author: Jay
  * @Date: Created in 19:50 2018/12/26
  * @Modified By:
  */
+@Data
 public class Buyer {
 
     private String name;
@@ -13,7 +16,11 @@ public class Buyer {
 
     private double price;
 
-    private double Maxquantity;
+    private double maxQuantity;
+
+    private double finalQuantity;
+
+    private double finalPrice;
 
     public Buyer(String name, double quantity, double price) {
         this.name = name;
